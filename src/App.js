@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Pagination from './components/Pagination';
+import carData from './data/cars.json';
+import SearchBar from './components/SearchBar';
+import CarCard from './components/CarCard';
+import "./App.css"
+import CarList from './components/CarList';
 
-function App() {
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  console.log(searchTerm);
+  const [currentPage, setCurrentPage] = useState(1);
+  const carsPerPage = 6;
+
+  const filteredCars = carData.filter((car) =>
+    car.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredCars.length / carsPerPage);
+  const indexOfLastCar = currentPage * carsPerPage;
+  const indexOfFirstCar = indexOfLastCar - carsPerPage;
+  const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <SearchBar onSearch={setSearchTerm}  />
+      <CarList cars={currentCars} />
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
     </div>
   );
-}
+};
 
 export default App;
